@@ -2,15 +2,15 @@ let input = document.getElementById("inputbox");
 let buttons = document.querySelectorAll("button");
 
 let string = "";
-let arr = array.from(buttons);
-arr.forEach((buttons) => {
-  buttons.addEventlistener("click", (e) => {
-    if (e.target.innerHtml == "=") {
+let arr = Array.from(buttons);
+buttons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    if (e.target.innerHTML == "=") {
       string = eval(string);
       input.value = string;
     }
 
-    string + -e.target.innerHtml;
+    string += e.target.innerHTML;
     input.value = string;
   });
 });
