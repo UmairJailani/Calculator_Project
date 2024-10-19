@@ -5,7 +5,9 @@ let string = "";
 let arr = Array.from(buttons);
 buttons.forEach((button) => {
   button.addEventListener("click", (e) => {
+    input.focus();
     if (e.target.innerHTML == "=") {
+      string = string.replace(/×/g, "*").replace(/÷/g, "/");
       string = eval(string);
       input.value = string;
     } else if (e.target.innerHTML == "AC") {
@@ -21,8 +23,12 @@ buttons.forEach((button) => {
       string = "Error";
       input.value = string;
     } else {
-      string += e.target.innerHTML;
-      input.value = string;
+      if (string.length < 12) {
+        string += e.target.innerHTML;
+        input.value = string;
+      } else {
+        return;
+      }
     }
   });
 });
