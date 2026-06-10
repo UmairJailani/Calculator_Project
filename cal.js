@@ -19,10 +19,13 @@ const state = {
   useDeg:   true,
   sciMode:  false,
   histOpen: false,
+  progMode: false,
+  progBase: 10,
 };
 
 // ── History (localStorage) ──
 let history = [];
+let progInput = '0';
 try { history = JSON.parse(localStorage.getItem('calcHistory') || '[]'); } catch {}
 
 function saveHistory() { localStorage.setItem('calcHistory', JSON.stringify(history.slice(0, 50))); }
@@ -65,6 +68,7 @@ document.getElementById('histBackBtn').addEventListener('click', closeHistory);
 
 // ── Scientific toggle ──
 function toggleSci() {
+  if (state.progMode) return;
   state.sciMode = !state.sciMode;
   sciButtons.classList.toggle('visible', state.sciMode);
   drToggle.classList.toggle('visible', state.sciMode);
@@ -101,6 +105,11 @@ function compute(a, op, b) {
     case '-': return a - b;
     case '*': return a * b;
     case '/': return b === 0 ? null : a / b;
+    case 'AND': return Math.trunc(a) & Math.trunc(b);
+    case 'OR':  return Math.trunc(a) | Math.trunc(b);
+    case 'XOR': return Math.trunc(a) ^ Math.trunc(b);
+    case '<<':  return Math.trunc(a) << Math.trunc(b);
+    case '>>':  return Math.trunc(a) >> Math.trunc(b);
   }
 }
 
@@ -119,10 +128,19 @@ function updateDisplay() {
   exprEl.textContent   = state.exprStr || ' ';
   const acBtn = document.querySelector('[data-action="clear"]');
   if (acBtn) acBtn.textContent = (!state.justCalc && state.current !== '0') ? '⌫' : 'AC';
+  if (state.progMode) updateProgRows();
 }
 
 // ── Actions ──
 function inputDigit(d) {
+  if (state.progMode) {
+    if (state.justCalc) { progInput = d; state.justCalc = false; state.exprStr = ''; }
+    else progInput = progInput === '0' ? d : (progInput.length < 16 ? progInput + d : progInput);
+    const dec = parseInt(progInput, state.progBase);
+    state.current = isNaN(dec) ? '0' : String(dec);
+    updateDisplay();
+    return;
+  }
   if (state.justCalc) { state.current = d; state.exprStr = ''; state.justCalc = false; }
   else state.current = state.current === '0' ? d : (state.current.length < 15 ? state.current + d : state.current);
   updateDisplay();
@@ -135,7 +153,7 @@ function inputDecimal() {
 }
 
 function inputOperator(op) {
-  const sym = { '+':'+', '-':'−', '*':'×', '/':'÷' }[op];
+  const sym = { '+':'+', '-':'−', '*':'×', '/':'÷', 'AND':'AND', 'OR':'OR', 'XOR':'XOR', '<<':'LS', '>>':'RS' }[op] || op;
   if (state.operator && !state.justCalc) {
     const res = compute(state.prev, state.operator, state.current);
     if (res === null) { showError(); return; }
@@ -151,7 +169,7 @@ function inputOperator(op) {
 
 function equals() {
   if (!state.operator || state.prev === null) return;
-  const sym = { '+':'+', '-':'−', '*':'×', '/':'÷' }[state.operator];
+  const sym = { '+':'+', '-':'−', '*':'×', '/':'÷', 'AND':'AND', 'OR':'OR', 'XOR':'XOR', '<<':'LS', '>>':'RS' }[state.operator] || state.operator;
   const res = compute(state.prev, state.operator, state.current);
   if (res === null) { showError(); return; }
   const expr = state.prev + ' ' + sym + ' ' + state.current + ' =';
@@ -162,6 +180,10 @@ function equals() {
   state.prev     = null;
   state.operator = null;
   state.justCalc = true;
+  if (state.progMode) {
+    const n = Math.trunc(parseFloat(result));
+    progInput = isNaN(n) ? '0' : (n < 0 ? '-' + Math.abs(n).toString(state.progBase).toUpperCase() : n.toString(state.progBase).toUpperCase());
+  }
   clearActiveOp();
   updateDisplay();
 }
@@ -169,11 +191,18 @@ function equals() {
 function clear() {
   state.current = '0'; state.prev = null; state.operator = null;
   state.justCalc = false; state.exprStr = '';
+  if (state.progMode) progInput = '0';
   clearActiveOp(); updateDisplay();
 }
-
 function backspace() {
   if (state.justCalc) return;
+  if (state.progMode) {
+    progInput = progInput.length > 1 ? progInput.slice(0, -1) : '0';
+    const dec = parseInt(progInput, state.progBase);
+    state.current = isNaN(dec) ? '0' : String(dec);
+    updateDisplay();
+    return;
+  }
   state.current = state.current.length > 1 ? state.current.slice(0, -1) : '0';
   updateDisplay();
 }
@@ -235,8 +264,8 @@ function showError() {
 }
 
 // ── Op highlight ──
-function setActiveOp(op)  { clearActiveOp(); const b = document.querySelector(`.btn-op[data-op="${op}"]`); if (b) b.classList.add('active'); }
-function clearActiveOp()  { document.querySelectorAll('.btn-op').forEach(b => b.classList.remove('active')); }
+function setActiveOp(op)  { clearActiveOp(); const b = document.querySelector(`.btn-op[data-op="${op}"], .btn-bw[data-op="${op}"]`); if (b) b.classList.add('active'); }
+function clearActiveOp()  { document.querySelectorAll('.btn-op, .btn-bw').forEach(b => b.classList.remove('active')); }
 
 // ── Button clicks ──
 document.querySelectorAll('.btn').forEach(btn => {
@@ -251,6 +280,8 @@ document.querySelectorAll('.btn').forEach(btn => {
     if (action === 'percent') percent();
     if (action === 'sign')    toggleSign();
     if (action === 'sci')     sciApply(fn);
+    if (action === 'hex')         inputDigit(val);
+    if (action === 'bitwiseNot')  bitwiseNot();
     if (action === 'const')   insertConst(val);
   });
 });
@@ -284,6 +315,137 @@ document.addEventListener('keydown', e => {
   if (action === 'equals')  sel = `[data-action="equals"]`;
   if (action === 'clear' || action === 'backspace') sel = `[data-action="clear"]`;
   if (sel) { const el = document.querySelector(sel); if (el) { el.classList.add('key-flash'); setTimeout(() => el.classList.remove('key-flash'), 120); } }
+});
+
+
+
+// ── Programmer mode ──
+function toBaseStr(decVal, base) {
+  const n = Math.trunc(decVal);
+  if (isNaN(n)) return 'ERR';
+  if (base === 10) return String(n);
+  if (base === 2) {
+    const abs = Math.abs(n);
+    const bits = abs.toString(2).replace(/B(?=(d{4})+(?!d))/g, ' ');
+    return n < 0 ? '-' + bits : (bits || '0');
+  }
+  if (n < 0) return '-' + Math.abs(n).toString(base).toUpperCase();
+  return n.toString(base).toUpperCase();
+}
+
+function updateProgRows() {
+  const n = Math.trunc(parseFloat(state.current));
+  document.getElementById('prHex').textContent = isNaN(n) ? 'ERR' : toBaseStr(n, 16);
+  document.getElementById('prDec').textContent = isNaN(n) ? 'ERR' : String(n);
+  document.getElementById('prOct').textContent = isNaN(n) ? 'ERR' : toBaseStr(n, 8);
+  document.getElementById('prBin').textContent = isNaN(n) ? 'ERR' : toBaseStr(n, 2);
+  document.getElementById('progExpr').textContent = state.exprStr || ' ';
+  document.querySelectorAll('.prog-row').forEach(row => {
+    row.classList.toggle('active', parseInt(row.dataset.base) === state.progBase);
+  });
+}
+
+function updateProgButtonStates() {
+  const valid = {
+    2:  new Set(['0','1']),
+    8:  new Set(['0','1','2','3','4','5','6','7']),
+    10: new Set(['0','1','2','3','4','5','6','7','8','9']),
+    16: new Set(['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']),
+  }[state.progBase];
+  document.querySelectorAll('.btn-num[data-val]').forEach(btn => {
+    const off = !valid.has(btn.dataset.val);
+    btn.disabled = off;
+    btn.classList.toggle('prog-disabled', off);
+  });
+  document.querySelectorAll('.btn-hex[data-val]').forEach(btn => {
+    const off = !valid.has(btn.dataset.val);
+    btn.disabled = off;
+    btn.classList.toggle('prog-disabled', off);
+  });
+  const dot = document.querySelector('[data-action="decimal"]');
+  dot.disabled = true;
+  dot.classList.add('prog-disabled');
+}
+
+function switchProgBase(newBase) {
+  const dec = parseInt(progInput, state.progBase);
+  state.progBase = newBase;
+  if (!isNaN(dec)) {
+    progInput = dec < 0
+      ? '-' + Math.abs(dec).toString(newBase).toUpperCase()
+      : dec.toString(newBase).toUpperCase();
+    state.current = String(dec);
+  } else {
+    progInput = '0';
+    state.current = '0';
+  }
+  updateDisplay();
+  updateProgButtonStates();
+}
+
+function toggleProg() {
+  state.progMode = !state.progMode;
+  const progPad  = document.getElementById('progPad');
+  const progRows = document.getElementById('progRows');
+  const exprEl2  = document.getElementById('expr');
+  const resEl2   = document.getElementById('result');
+  const kbdHint  = document.getElementById('kbdHint');
+
+  if (state.progMode) {
+    if (state.sciMode) toggleSci(); // sci and prog are mutually exclusive — but toggleSci now guards against progMode, so toggle before setting
+    state.sciMode = false;
+    sciButtons.classList.remove('visible');
+    drToggle.classList.remove('visible');
+    sciBtn.classList.remove('active');
+
+    progPad.classList.add('visible');
+    progRows.classList.add('visible');
+    exprEl2.style.display  = 'none';
+    resEl2.style.display   = 'none';
+    kbdHint.style.display  = 'none';
+    document.getElementById('progBtn').classList.add('active');
+
+    state.current = String(Math.trunc(parseFloat(state.current) || 0));
+    const dec = parseInt(state.current);
+    progInput = isNaN(dec) ? '0' : (dec < 0 ? '-' + Math.abs(dec).toString(state.progBase).toUpperCase() : dec.toString(state.progBase).toUpperCase());
+    updateProgRows();
+    updateProgButtonStates();
+  } else {
+    progPad.classList.remove('visible');
+    progRows.classList.remove('visible');
+    exprEl2.style.display  = '';
+    resEl2.style.display   = '';
+    kbdHint.style.display  = '';
+    document.getElementById('progBtn').classList.remove('active');
+    document.querySelectorAll('.btn-num[data-val], .btn-hex[data-val], [data-action="decimal"]').forEach(btn => {
+      btn.disabled = false;
+      btn.classList.remove('prog-disabled');
+    });
+    updateDisplay();
+  }
+}
+
+function bitwiseNot() {
+  const v = Math.trunc(parseFloat(state.current));
+  if (isNaN(v)) return;
+  const result = ~v;
+  state.exprStr  = 'NOT(' + toBaseStr(v, state.progBase) + ')';
+  state.current  = String(result);
+  progInput = result < 0
+    ? '-' + Math.abs(result).toString(state.progBase).toUpperCase()
+    : result.toString(state.progBase).toUpperCase();
+  state.justCalc = true;
+  updateDisplay();
+}
+
+document.getElementById('progBtn').addEventListener('click', toggleProg);
+
+document.querySelectorAll('.prog-row').forEach(row => {
+  row.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!state.progMode) return;
+    switchProgBase(parseInt(row.dataset.base));
+  });
 });
 
 // ── Init ──

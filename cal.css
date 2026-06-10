@@ -285,3 +285,101 @@ body {
   0%   { filter: brightness(1.7); }
   100% { filter: brightness(1); }
 }
+
+/* ── Programmer display rows ── */
+.prog-rows {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  gap: 1px;
+}
+.prog-rows.visible { display: flex; }
+
+.prog-expr {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.28);
+  text-align: right;
+  min-height: 1.1em;
+  padding: 0 0 0.25rem;
+  word-break: break-all;
+}
+
+.prog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+  opacity: 0.4;
+}
+.prog-row.active { opacity: 1; }
+.prog-row:hover  { background: rgba(255,255,255,0.05); }
+
+.pr-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--calc-accent);
+  min-width: 2.4rem;
+}
+.prog-row.active .pr-label { color: #fff; }
+
+.pr-val {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.7);
+  font-family: 'Inter', monospace;
+  word-break: break-all;
+  text-align: right;
+}
+.prog-row.active .pr-val { font-size: 1.25rem; color: #fff; font-weight: 500; }
+
+/* ── Programmer pad (hex digits + bitwise) ── */
+.prog-pad {
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.prog-pad.visible { display: grid; }
+
+.btn-hex {
+  height: 52px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #1a1a2e;
+  color: #c4b5fd;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: filter 0.1s, transform 0.08s;
+  letter-spacing: 0.04em;
+}
+.btn-hex:hover  { filter: brightness(1.4); }
+.btn-hex:active { transform: scale(0.91); filter: brightness(0.8); }
+
+.btn-bw {
+  height: 52px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #1e1a2e;
+  color: #f0abfc;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: filter 0.1s, transform 0.08s;
+  letter-spacing: 0.06em;
+}
+.btn-bw:hover  { filter: brightness(1.4); }
+.btn-bw:active { transform: scale(0.91); filter: brightness(0.8); }
+.btn-bw.active { background: #f0abfc; color: #1e1a2e; }
+
+/* disabled digit (wrong base) */
+.prog-disabled {
+  opacity: 0.2 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}

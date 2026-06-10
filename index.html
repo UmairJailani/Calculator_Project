@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculator — Scientific Mode + History</title>
-    <meta name="description" content="Premium dark calculator with scientific functions, calculation history, and full keyboard support. Free to embed." />
-    <meta property="og:title"       content="Calculator — Scientific Mode + History" />
-    <meta property="og:description" content="Premium dark calculator with scientific functions, calculation history, and full keyboard support. Free to embed." />
+    <title>Calculator — Scientific + Programmer Mode</title>
+    <meta name="description" content="Premium dark calculator with scientific functions, programmer mode (HEX/BIN/OCT), history, and full keyboard support. Free to embed." />
+    <meta property="og:title"       content="Calculator — Scientific + Programmer Mode" />
+    <meta property="og:description" content="Premium dark calculator with scientific functions, programmer mode (HEX/BIN/OCT), history, and full keyboard support. Free to embed." />
     <meta property="og:image"       content="https://umairjailani.github.io/Calculator_Project/preview.png" />
     <meta property="og:url"         content="https://umairjailani.github.io/Calculator_Project/" />
     <meta property="og:type"        content="website" />
@@ -25,6 +25,7 @@
           <button class="dr-btn active" id="degBtn">DEG</button>
           <button class="dr-btn" id="radBtn">RAD</button>
         </div>
+        <button class="top-btn" id="progBtn" title="Programmer mode">0x</button>
         <button class="top-btn" id="histBtn" title="History">⏱</button>
       </div>
 
@@ -33,6 +34,27 @@
         <div class="expr"   id="expr">&nbsp;</div>
         <div class="result" id="result">0</div>
         <div class="copy-toast" id="copyToast">Copied!</div>
+
+        <!-- Programmer display (4 base rows, hidden until prog mode) -->
+        <div class="prog-rows" id="progRows">
+          <div class="prog-expr" id="progExpr">&nbsp;</div>
+          <div class="prog-row" data-base="16">
+            <span class="pr-label">HEX</span>
+            <span class="pr-val"  id="prHex">0</span>
+          </div>
+          <div class="prog-row active" data-base="10">
+            <span class="pr-label">DEC</span>
+            <span class="pr-val"  id="prDec">0</span>
+          </div>
+          <div class="prog-row" data-base="8">
+            <span class="pr-label">OCT</span>
+            <span class="pr-val"  id="prOct">0</span>
+          </div>
+          <div class="prog-row" data-base="2">
+            <span class="pr-label">BIN</span>
+            <span class="pr-val"  id="prBin">0</span>
+          </div>
+        </div>
       </div>
 
       <!-- Scientific rows (hidden until toggled) -->
@@ -51,6 +73,24 @@
         <button class="btn btn-sci" data-action="sci" data-fn="abs">|x|</button>
         <button class="btn btn-sci" data-action="const" data-val="pi">π</button>
         <button class="btn btn-sci" data-action="const" data-val="e">e</button>
+      </div>
+
+      <!-- Programmer pad (hex digits + bitwise ops, hidden until prog mode) -->
+      <div class="prog-pad" id="progPad">
+        <button class="btn btn-hex" data-action="hex" data-val="A">A</button>
+        <button class="btn btn-hex" data-action="hex" data-val="B">B</button>
+        <button class="btn btn-hex" data-action="hex" data-val="C">C</button>
+        <button class="btn btn-hex" data-action="hex" data-val="D">D</button>
+
+        <button class="btn btn-hex" data-action="hex" data-val="E">E</button>
+        <button class="btn btn-hex" data-action="hex" data-val="F">F</button>
+        <button class="btn btn-bw"  data-action="op"  data-op="AND">AND</button>
+        <button class="btn btn-bw"  data-action="op"  data-op="OR">OR</button>
+
+        <button class="btn btn-bw"  data-action="op"  data-op="XOR">XOR</button>
+        <button class="btn btn-bw"  data-action="bitwiseNot">NOT</button>
+        <button class="btn btn-bw"  data-action="op"  data-op="<<">LS</button>
+        <button class="btn btn-bw"  data-action="op"  data-op=">>">RS</button>
       </div>
 
       <!-- Standard buttons -->
@@ -81,7 +121,7 @@
       </div>
 
       <!-- Keyboard hint -->
-      <div class="kbd-hint">Enter = &nbsp;·&nbsp; Esc clear &nbsp;·&nbsp; ← delete &nbsp;·&nbsp; keyboard supported</div>
+      <div class="kbd-hint" id="kbdHint">Enter = &nbsp;·&nbsp; Esc clear &nbsp;·&nbsp; ← delete &nbsp;·&nbsp; keyboard supported</div>
 
       <!-- History panel (slides up over buttons) -->
       <div class="hist-panel" id="histPanel">

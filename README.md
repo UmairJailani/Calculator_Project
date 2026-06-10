@@ -1,6 +1,6 @@
 # Calculator
 
-> Premium dark calculator with scientific mode, history, and full keyboard + mouse control.
+> Premium dark calculator with scientific mode, **programmer mode (HEX/BIN/OCT)**, history, and full keyboard + mouse control.
 
 ![Calculator Preview](preview.png)
 
@@ -12,6 +12,9 @@
 
 | Feature | Details |
 |---------|---------|
+| Programmer mode | Toggle with `0x` button — shows HEX / DEC / OCT / BIN simultaneously |
+| Base switching | Click any base row to switch input mode (HEX → type A–F, BIN → only 0/1) |
+| Bitwise operators | AND, OR, XOR, NOT, LS (left shift), RS (right shift) |
 | Scientific mode | sin, cos, tan, √, x², x³, 1/x, log, ln, \|x\|, π, e |
 | DEG / RAD toggle | Appears when scientific mode is on |
 | Calculation history | Last 50 calculations, click any to restore — persists across sessions |
