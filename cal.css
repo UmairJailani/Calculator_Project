@@ -215,6 +215,20 @@ body {
   color: rgba(255,255,255,0.7);
   letter-spacing: 0.04em;
 }
+#histBackBtn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.3rem 0.7rem;
+  transition: all 0.2s;
+}
+#histBackBtn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
 #clearHistBtn {
   background: rgba(248,113,113,0.12);
   border: 1px solid rgba(248,113,113,0.25);

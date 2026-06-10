@@ -61,6 +61,7 @@ histBtn.addEventListener('click', () => state.histOpen ? closeHistory() : openHi
 document.getElementById('clearHistBtn').addEventListener('click', () => {
   history = []; saveHistory(); renderHistory();
 });
+document.getElementById('histBackBtn').addEventListener('click', closeHistory);
 
 // ── Scientific toggle ──
 function toggleSci() {
@@ -116,6 +117,8 @@ function updateDisplay() {
   resultEl.style.fontSize = len > 11 ? '1.9rem' : len > 8 ? '2.5rem' : len > 6 ? '3rem' : '3.5rem';
   resultEl.textContent = val;
   exprEl.textContent   = state.exprStr || ' ';
+  const acBtn = document.querySelector('[data-action="clear"]');
+  if (acBtn) acBtn.textContent = (!state.justCalc && state.current !== '0') ? '⌫' : 'AC';
 }
 
 // ── Actions ──
@@ -244,7 +247,7 @@ document.querySelectorAll('.btn').forEach(btn => {
     if (action === 'decimal') inputDecimal();
     if (action === 'op')      inputOperator(op);
     if (action === 'equals')  equals();
-    if (action === 'clear')   clear();
+    if (action === 'clear')   { if (!state.justCalc && state.current !== '0') backspace(); else clear(); }
     if (action === 'percent') percent();
     if (action === 'sign')    toggleSign();
     if (action === 'sci')     sciApply(fn);
