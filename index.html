@@ -9,13 +9,44 @@
     <link rel="stylesheet" href="cal.css" />
   </head>
   <body>
-    <div class="calc">
+    <div class="calc" id="calc">
 
-      <div class="display">
-        <div class="expr" id="expr">&nbsp;</div>
-        <div class="result" id="result">0</div>
+      <!-- Top bar -->
+      <div class="top-bar">
+        <button class="top-btn" id="sciBtn" title="Scientific mode">f(x)</button>
+        <div class="dr-toggle" id="drToggle">
+          <button class="dr-btn active" id="degBtn">DEG</button>
+          <button class="dr-btn" id="radBtn">RAD</button>
+        </div>
+        <button class="top-btn" id="histBtn" title="History">⏱</button>
       </div>
 
+      <!-- Display -->
+      <div class="display" id="display" title="Click to copy">
+        <div class="expr"   id="expr">&nbsp;</div>
+        <div class="result" id="result">0</div>
+        <div class="copy-toast" id="copyToast">Copied!</div>
+      </div>
+
+      <!-- Scientific rows (hidden until toggled) -->
+      <div class="sci-buttons" id="sciButtons">
+        <button class="btn btn-sci" data-action="sci" data-fn="sin">sin</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="cos">cos</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="tan">tan</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="sqrt">√x</button>
+
+        <button class="btn btn-sci" data-action="sci" data-fn="sq">x²</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="cube">x³</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="inv">1/x</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="log">log</button>
+
+        <button class="btn btn-sci" data-action="sci" data-fn="ln">ln</button>
+        <button class="btn btn-sci" data-action="sci" data-fn="abs">|x|</button>
+        <button class="btn btn-sci" data-action="const" data-val="pi">π</button>
+        <button class="btn btn-sci" data-action="const" data-val="e">e</button>
+      </div>
+
+      <!-- Standard buttons -->
       <div class="buttons">
         <button class="btn btn-fn"  data-action="clear">AC</button>
         <button class="btn btn-fn"  data-action="sign">+/−</button>
@@ -40,6 +71,19 @@
         <button class="btn btn-num btn-zero" data-action="digit" data-val="0">0</button>
         <button class="btn btn-num" data-action="decimal">.</button>
         <button class="btn btn-eq"  data-action="equals">=</button>
+      </div>
+
+      <!-- Keyboard hint -->
+      <div class="kbd-hint">Enter = &nbsp;·&nbsp; Esc clear &nbsp;·&nbsp; ← delete &nbsp;·&nbsp; keyboard supported</div>
+
+      <!-- History panel (slides up over buttons) -->
+      <div class="hist-panel" id="histPanel">
+        <div class="hist-header">
+          <span>History</span>
+          <button id="clearHistBtn">Clear all</button>
+        </div>
+        <div class="hist-list" id="histList"></div>
+        <div class="hist-empty" id="histEmpty">No calculations yet</div>
       </div>
 
     </div>
