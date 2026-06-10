@@ -1,44 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculator</title>
-    <link href="cal.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="cal.css" />
   </head>
-
   <body>
-    <div class="container">
-      <input id="inputbox" type="text" placeholder="0" />
-      <div class="row">
-        <button class="AC">AC</button>
-        <button class="del">Del</button>
-        <button class="operator">%</button>
-        <button class="operator">&divide;</button>
+    <div class="calc">
+
+      <div class="display">
+        <div class="expr" id="expr">&nbsp;</div>
+        <div class="result" id="result">0</div>
       </div>
-      <div class="row">
-        <button>7</button>
-        <button>8</button>
-        <button>9</button>
-        <button class="operator">&times;</button>
+
+      <div class="buttons">
+        <button class="btn btn-fn"  data-action="clear">AC</button>
+        <button class="btn btn-fn"  data-action="sign">+/−</button>
+        <button class="btn btn-fn"  data-action="percent">%</button>
+        <button class="btn btn-op"  data-action="op" data-op="/">÷</button>
+
+        <button class="btn btn-num" data-action="digit" data-val="7">7</button>
+        <button class="btn btn-num" data-action="digit" data-val="8">8</button>
+        <button class="btn btn-num" data-action="digit" data-val="9">9</button>
+        <button class="btn btn-op"  data-action="op" data-op="*">×</button>
+
+        <button class="btn btn-num" data-action="digit" data-val="4">4</button>
+        <button class="btn btn-num" data-action="digit" data-val="5">5</button>
+        <button class="btn btn-num" data-action="digit" data-val="6">6</button>
+        <button class="btn btn-op"  data-action="op" data-op="-">−</button>
+
+        <button class="btn btn-num" data-action="digit" data-val="1">1</button>
+        <button class="btn btn-num" data-action="digit" data-val="2">2</button>
+        <button class="btn btn-num" data-action="digit" data-val="3">3</button>
+        <button class="btn btn-op"  data-action="op" data-op="+">+</button>
+
+        <button class="btn btn-num btn-zero" data-action="digit" data-val="0">0</button>
+        <button class="btn btn-num" data-action="decimal">.</button>
+        <button class="btn btn-eq"  data-action="equals">=</button>
       </div>
-      <div class="row">
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button class="operator">+</button>
-      </div>
-      <div class="row">
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button class="operator">-</button>
-      </div>
-      <div class="row">
-        <button class="longzero">0</button>
-        <button>.</button>
-        <button class="equalbtn">=</button>
-      </div>
+
     </div>
     <script src="cal.js"></script>
   </body>
